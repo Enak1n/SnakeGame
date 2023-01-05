@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Linq;
 
 namespace SnakeGame
@@ -23,7 +24,7 @@ namespace SnakeGame
             Snake snake = new Snake(currentPosition, bodyOfSnake);
             Apple apple = new Apple();
 
-            snake.Speed = 100;
+            snake.Speed = 200;
             game.Score = 0;
             snake.HeadOfSnake = '■';
             ConsoleKeyInfo pressedKey = new ConsoleKeyInfo('w', ConsoleKey.W, false, false, false);
@@ -43,17 +44,22 @@ namespace SnakeGame
 
             Console.SetCursorPosition(0, 0);
             DrawMap(map);
-            snake.X = random.Next(1, GetMaxLengthOfLine(file) - 1);
-            snake.Y = random.Next(1, file.Length - 1);
+            snake.X = random.Next(4, GetMaxLengthOfLine(file) - 3);
+            snake.Y = random.Next(2, file.Length - 3);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.SetCursorPosition(snake.X, snake.Y);
             Console.Write(snake.HeadOfSnake);
 
-            apple.X = random.Next(1, GetMaxLengthOfLine(file) - 1);
-            apple.Y = random.Next(1, file.Length - 1);
+            apple.X = random.Next(4, GetMaxLengthOfLine(file) - 1);
+            apple.Y = random.Next(2, file.Length - 3);
 
             while (true)
             {
+                if (snake.IsCollision(currentPosition))
+                {
+                    Thread.Sleep(Timeout.Infinite);
+                }
+
                 Console.SetCursorPosition(56, 0);
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.Write($"Score: {game.Score}");
@@ -75,6 +81,11 @@ namespace SnakeGame
 
                 if (apple.IsEaten(apple.X, apple.Y, snake.X, snake.Y))
                 {
+                    snake.AddPixelToHead(snake.X, snake.Y, apple.X, apple.Y);
+                    foreach (var pixel in snake.BodyOfSnake)
+                    {
+                        Console.Write(pixel);
+                    }
                     game.Score++;
                     apple.X = random.Next(1, GetMaxLengthOfLine(file) - 1);
                     apple.Y = random.Next(1, file.Length - 1);
@@ -155,11 +166,30 @@ namespace SnakeGame
             }
         }
 
+        public List<char> BodyOfSnake
+        {
+            get
+            {
+                return _bodyOfSnake;
+            }
+        }
+
         public Snake(int[] currentPosition, List<char> bodyOfSnake)
         {
             _currentPosition = currentPosition;
             _bodyOfSnake = bodyOfSnake;
         }
+
+        public List<char> AddPixelToHead(int currentSnakePositionX, int currentSnakePositionY, int currentApplePositionX, int currentApplePositionY)
+        {
+            Apple apple = new Apple();
+            if (apple.IsEaten(currentApplePositionX, currentApplePositionY, currentSnakePositionX, currentSnakePositionX))
+            {
+                BodyOfSnake.Add('■');
+                return BodyOfSnake;
+            }
+            return BodyOfSnake;
+        } 
 
         public int[] Move(int currentX, int currentY, ConsoleKeyInfo pressedKey)
         {
@@ -175,6 +205,16 @@ namespace SnakeGame
             _currentPosition[1] = currentY;
             return _currentPosition;
         }
+
+        public bool IsCollision(int[] nextPosition)
+        {
+            if (nextPosition[0] + 1 == 52 || nextPosition[0] - 1 == 1 || nextPosition[1] - 1 == 0 || nextPosition[1] + 1 == 13)
+            {
+                return true;
+            }
+            else
+                return false;
+        }
     }
 
     class Apple : Game
@@ -189,7 +229,6 @@ namespace SnakeGame
         {
             if (applePositionX == snakePositionX && applePositionY == snakePositionY)
             {
-                Score++;
                 Console.SetCursorPosition(applePositionX, applePositionY);
                 Console.Write(" ");
                 return true;
