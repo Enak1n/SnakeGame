@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using System.Xml.Linq;
+
 
 namespace SnakeGame
 {
@@ -36,22 +32,18 @@ namespace SnakeGame
                     pressedKey = Console.ReadKey();
                 }
             });
-
-            string[] file = File.ReadAllLines("map.txt");
-            int maxLines = GetMaxLengthOfLine(file);
-            char[,] map = ReadMap("map.txt");
             Random random = new Random();
 
             Console.SetCursorPosition(0, 0);
-            DrawMap(map);
-            snake.X = random.Next(4, GetMaxLengthOfLine(file) - 3);
-            snake.Y = random.Next(2, file.Length - 3);
+            DrawMap();
+            snake.X = random.Next(4, 50 );
+            snake.Y = random.Next(2, 10);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.SetCursorPosition(snake.X, snake.Y);
             Console.Write(snake.HeadOfSnake);
 
-            apple.X = random.Next(4, GetMaxLengthOfLine(file) - 1);
-            apple.Y = random.Next(2, file.Length - 3);
+            apple.X = random.Next(4, 50);
+            apple.Y = random.Next(2, 10);
 
             while (true)
             {
@@ -60,14 +52,14 @@ namespace SnakeGame
                     Thread.Sleep(Timeout.Infinite);
                 }
 
-                Console.SetCursorPosition(56, 0);
+                Console.SetCursorPosition(60, 0);
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.Write($"Score: {game.Score}");
 
                 snake.Move(snake.X, snake.Y, pressedKey);
                 Console.SetCursorPosition(0, 0);
                 Console.ForegroundColor = ConsoleColor.Gray;
-                DrawMap(map);
+                DrawMap();
                 Console.SetCursorPosition(apple.X, apple.Y);
                 apple.GenerateApple();
 
@@ -81,16 +73,16 @@ namespace SnakeGame
 
                 if (apple.IsEaten(apple.X, apple.Y, snake.X, snake.Y))
                 {
-                    snake.AddPixelToHead(snake.X, snake.Y, apple.X, apple.Y);
+                    snake.AddPixelToHead();
+                    Console.SetCursorPosition(snake.X - 1, snake.Y);
                     foreach (var pixel in snake.BodyOfSnake)
                     {
                         Console.Write(pixel);
                     }
                     game.Score++;
-                    apple.X = random.Next(1, GetMaxLengthOfLine(file) - 1);
-                    apple.Y = random.Next(1, file.Length - 1);
+                    apple.X = random.Next(4, 50);
+                    apple.Y = random.Next(2, 10);
                     Console.SetCursorPosition(apple.X, apple.Y);
-                    
                 }
 
                 Console.SetCursorPosition(0, 20);
@@ -98,49 +90,28 @@ namespace SnakeGame
                 Console.WriteLine(apple.Y);
                 Console.WriteLine(snake.X);
                 Console.WriteLine(snake.Y);
-
-                
-
-                
+    
             }
         }
 
-        private static char[,] ReadMap(string path)
-        {
-            string[] file = File.ReadAllLines("map.txt");
-            char[,] map = new char[GetMaxLengthOfLine(file), file.Length];
 
-            for (int x = 0; x < map.GetLength(0); x++)
-            {
-                for (int y = 0; y < map.GetLength(1); y++)
-                {
-                    map[x, y] = file[y][x];
-                }
-            }
-            return map;
-        }
-
-        public static int GetMaxLengthOfLine(string[] lines)
+        private static void DrawMap()
         {
-            int maxLength = lines[0].Length;
-            foreach (var line in lines)
+            for (int i = 0; i < 55; i++)
+                Console.Write("█");
+            for (int i = 0; i < 14; i++)
+                Console.WriteLine("█");
+            for (int i = 0; i < 55; i++)
             {
-                if (line.Length > maxLength)
-                    maxLength = line.Length;
+                Console.SetCursorPosition(i, 14);
+                Console.Write("█");
             }
-            return maxLength;
-        }
+            for (int i = 0; i < 15; i++)
+            {
+                Console.SetCursorPosition(55, i);
+                Console.WriteLine("█");
+            }
 
-        private static void DrawMap(char[,] map)
-        {
-            for (int y = 0; y < map.GetLength(1); y++)
-            {
-                for (int x = 0; x < map.GetLength(0); x++)
-                {
-                    Console.Write(map[x, y]);
-                }
-                Console.WriteLine(" ");
-            }
         }
     }
 
@@ -180,19 +151,16 @@ namespace SnakeGame
             _bodyOfSnake = bodyOfSnake;
         }
 
-        public List<char> AddPixelToHead(int currentSnakePositionX, int currentSnakePositionY, int currentApplePositionX, int currentApplePositionY)
+        public List<char> AddPixelToHead()
         {
-            Apple apple = new Apple();
-            if (apple.IsEaten(currentApplePositionX, currentApplePositionY, currentSnakePositionX, currentSnakePositionX))
-            {
                 BodyOfSnake.Add('■');
                 return BodyOfSnake;
-            }
-            return BodyOfSnake;
         } 
 
         public int[] Move(int currentX, int currentY, ConsoleKeyInfo pressedKey)
         {
+            Console.SetCursorPosition(currentX, currentY);
+            Console.Write(" ");
             if (pressedKey.Key == ConsoleKey.UpArrow)
                 currentY -= 1;
             if (pressedKey.Key == ConsoleKey.DownArrow)
@@ -208,7 +176,7 @@ namespace SnakeGame
 
         public bool IsCollision(int[] nextPosition)
         {
-            if (nextPosition[0] + 1 == 52 || nextPosition[0] - 1 == 1 || nextPosition[1] - 1 == 0 || nextPosition[1] + 1 == 13)
+            if (nextPosition[0] + 1 == 55 || nextPosition[0] - 1 == 0 || nextPosition[1] - 1 == 0 || nextPosition[1] + 1 == 14)
             {
                 return true;
             }
