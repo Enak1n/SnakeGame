@@ -11,7 +11,6 @@ namespace SnakeGame
     {
         static void Main(string[] args)
         {
-
             Console.CursorVisible = false;
             int[] currentPosition = { 0, 0 };
             List<char> bodyOfSnake = new List<char>();
@@ -22,7 +21,7 @@ namespace SnakeGame
 
             snake.Speed = 200;
             game.Score = 0;
-            snake.HeadOfSnake = '■';
+            snake.HeadOfSnake = '█';
             ConsoleKeyInfo pressedKey = new ConsoleKeyInfo('w', ConsoleKey.W, false, false, false);
 
             Task.Run(() =>
@@ -34,16 +33,15 @@ namespace SnakeGame
             });
             Random random = new Random();
 
-            Console.SetCursorPosition(0, 0);
             DrawMap();
-            snake.X = random.Next(4, 50 );
-            snake.Y = random.Next(2, 10);
+            snake.X = random.Next(17, 65);
+            snake.Y = random.Next(7, 16);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.SetCursorPosition(snake.X, snake.Y);
             Console.Write(snake.HeadOfSnake);
 
-            apple.X = random.Next(4, 50);
-            apple.Y = random.Next(2, 10);
+            apple.X = random.Next(17, 65);
+            apple.Y = random.Next(7, 16);
 
             while (true)
             {
@@ -56,8 +54,7 @@ namespace SnakeGame
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.Write($"Score: {game.Score}");
 
-                snake.Move(snake.X, snake.Y, pressedKey);
-                Console.SetCursorPosition(0, 0);
+                snake.Move(snake.X, snake.Y, pressedKey, snake.BodyOfSnake);
                 Console.ForegroundColor = ConsoleColor.Gray;
                 DrawMap();
                 Console.SetCursorPosition(apple.X, apple.Y);
@@ -75,13 +72,9 @@ namespace SnakeGame
                 {
                     snake.AddPixelToHead();
                     Console.SetCursorPosition(snake.X - 1, snake.Y);
-                    foreach (var pixel in snake.BodyOfSnake)
-                    {
-                        Console.Write(pixel);
-                    }
                     game.Score++;
-                    apple.X = random.Next(4, 50);
-                    apple.Y = random.Next(2, 10);
+                    apple.X = random.Next(17, 65);
+                    apple.Y = random.Next(7, 16);
                     Console.SetCursorPosition(apple.X, apple.Y);
                 }
 
@@ -90,25 +83,31 @@ namespace SnakeGame
                 Console.WriteLine(apple.Y);
                 Console.WriteLine(snake.X);
                 Console.WriteLine(snake.Y);
-    
+
             }
         }
 
 
         private static void DrawMap()
         {
-            for (int i = 0; i < 55; i++)
-                Console.Write("█");
-            for (int i = 0; i < 14; i++)
-                Console.WriteLine("█");
-            for (int i = 0; i < 55; i++)
+            for (int i = 15; i < 70; i++)
             {
-                Console.SetCursorPosition(i, 14);
+                Console.SetCursorPosition(i, 5);
                 Console.Write("█");
             }
-            for (int i = 0; i < 15; i++)
+            for (int i = 5; i < 19; i++)
             {
-                Console.SetCursorPosition(55, i);
+                Console.SetCursorPosition(15, i);
+                Console.Write("█");
+            }
+            for (int i = 15; i < 70; i++)
+            {
+                Console.SetCursorPosition(i, 19);
+                Console.Write("█");
+            }
+            for (int i = 5; i < 20; i++)
+            {
+                Console.SetCursorPosition(70, i);
                 Console.WriteLine("█");
             }
 
@@ -153,22 +152,153 @@ namespace SnakeGame
 
         public List<char> AddPixelToHead()
         {
-                BodyOfSnake.Add('■');
-                return BodyOfSnake;
-        } 
+            BodyOfSnake.Add('█');
+            return BodyOfSnake;
+        }
 
-        public int[] Move(int currentX, int currentY, ConsoleKeyInfo pressedKey)
+        public int[] Move(int currentX, int currentY, ConsoleKeyInfo pressedKey, List<char> bodyOfSnake)
         {
             Console.SetCursorPosition(currentX, currentY);
             Console.Write(" ");
             if (pressedKey.Key == ConsoleKey.UpArrow)
+            {
                 currentY -= 1;
+                int x = 1;
+                int y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX + y, currentY + x);
+                    Console.Write(" ");
+                    Console.SetCursorPosition(currentX, currentY + 1);
+                    Console.Write(pixel);
+                    y--;
+                    x++;
+                }
+                x = 1;
+                y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX - y, currentY + x);
+                    Console.Write(" ");
+                    Console.SetCursorPosition(currentX, currentY + 1);
+                    Console.Write(pixel);
+                    y--;
+                    x++;
+                }
+                x = 1;
+                y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX, currentY);
+                    Console.Write(pixel);
+                    Console.SetCursorPosition(currentX, currentY + y + x);
+                    Console.Write(" ");
+                    y--;
+                    x++;
+                }
+            }
             if (pressedKey.Key == ConsoleKey.DownArrow)
+            {
                 currentY += 1;
+                int x = 1;
+                int y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX + y, currentY - x);
+                    Console.Write(" ");
+                    Console.SetCursorPosition(currentX, currentY - 1);
+                    Console.Write(pixel);
+                    y--;
+                    x++;
+                }
+                x = 1;
+                y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX - y, currentY - x);
+                    Console.Write(" ");
+                    Console.SetCursorPosition(currentX, currentY - 1);
+                    Console.Write(pixel);
+                    y--;
+                    x++;
+                }
+                x = 1;
+                y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX, currentY);
+                    Console.Write(pixel);
+                    Console.SetCursorPosition(currentX, currentY - y - x);
+                    Console.Write(" ");
+                    y--;
+                    x++;
+                }
+            }
             if (pressedKey.Key == ConsoleKey.LeftArrow)
+            {
                 currentX -= 1;
+                int x = 1;
+                int y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX + x, currentY + y);
+                    Console.Write(" ");
+                    Console.SetCursorPosition(currentX + 1, currentY);
+                    Console.Write(pixel);
+                    y--;
+                    x++;
+                }
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX, currentY);
+                    Console.Write(pixel);
+                    Console.SetCursorPosition(currentX + x, currentY);
+                    Console.Write(" ");
+                    x++;
+                }
+                x = 1;
+                y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX + x, currentY - y);
+                    Console.Write(" ");
+                    y--;
+                    x++;
+                }
+            }
             if (pressedKey.Key == ConsoleKey.RightArrow)
+            {
                 currentX += 1;
+
+                int x = 1;
+                int y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX - x, currentY + y);
+                    Console.Write(" ");
+                    Console.SetCursorPosition(currentX - 1, currentY);
+                    Console.Write(pixel);
+                    y--;
+                    x++;
+                }
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX, currentY);
+                    Console.Write(pixel);
+                    Console.SetCursorPosition(currentX - x, currentY);
+                    Console.Write(" ");
+                    x++;
+                }
+                x = 1;
+                y = bodyOfSnake.Count;
+                foreach (var pixel in bodyOfSnake)
+                {
+                    Console.SetCursorPosition(currentX - x, currentY - y);
+                    Console.Write(" ");
+                    y--;
+                    x++;
+                }
+            }
             _currentPosition[0] = currentX;
             _currentPosition[1] = currentY;
             return _currentPosition;
@@ -176,7 +306,7 @@ namespace SnakeGame
 
         public bool IsCollision(int[] nextPosition)
         {
-            if (nextPosition[0] + 1 == 55 || nextPosition[0] - 1 == 0 || nextPosition[1] - 1 == 0 || nextPosition[1] + 1 == 14)
+            if (nextPosition[0] + 1 == 70 || nextPosition[0] - 1 == 15 || nextPosition[1] - 1 == 5 || nextPosition[1] + 1 == 19)
             {
                 return true;
             }
@@ -197,6 +327,7 @@ namespace SnakeGame
         {
             if (applePositionX == snakePositionX && applePositionY == snakePositionY)
             {
+                Score++;
                 Console.SetCursorPosition(applePositionX, applePositionY);
                 Console.Write(" ");
                 return true;
