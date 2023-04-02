@@ -1,8 +1,0 @@
-C:\Users\masj0\source\repos\Snake_Game\Snake_Game\bin\Debug\Snake_Game.exe.config
-C:\Users\masj0\source\repos\Snake_Game\Snake_Game\bin\Debug\Snake_Game.exe
-C:\Users\masj0\source\repos\Snake_Game\Snake_Game\bin\Debug\Snake_Game.pdb
-C:\Users\masj0\source\repos\Snake_Game\Snake_Game\obj\Debug\Snake_Game.csproj.AssemblyReference.cache
-C:\Users\masj0\source\repos\Snake_Game\Snake_Game\obj\Debug\Snake_Game.csproj.SuggestedBindingRedirects.cache
-C:\Users\masj0\source\repos\Snake_Game\Snake_Game\obj\Debug\Snake_Game.csproj.CoreCompileInputs.cache
-C:\Users\masj0\source\repos\Snake_Game\Snake_Game\obj\Debug\Snake_Game.exe
-C:\Users\masj0\source\repos\Snake_Game\Snake_Game\obj\Debug\Snake_Game.pdb
